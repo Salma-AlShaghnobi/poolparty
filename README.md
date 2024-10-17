@@ -1,4 +1,4 @@
-# :fish: PoolParty  :umbrella:
+# :fish: PoolParty (Updated) :umbrella:
 
 ### A Pool-Seq Bioinformatic Pipeline (ver 0.8)
 
@@ -15,6 +15,89 @@ Ensure that proper permissions are set to execute each package in the pipeline .
  It is highly recommended to run the example files provided in the example directory before diving into large datasets.  
 
  PP_example.pdf under 'examples' contains additional detailed information on the pipeline.  
+
+# Precursors
+
+This repository contains minor code modifications and revised comments that assist the user during the installation process. This version offers enhanced details regarding all facets of the pipeline. It also rectifies and debugs errors encountered when attempting to execute the original work. 
+
+# Installation
+
+Installing the [poolparty package](https://github.com/StevenMicheletti/poolparty/) to run PPAlign and PPanalyze on the example it provides requires installing certain versions of Ubuntu, R, and the libraries listed below (which may be older versions). The following sections are not exhaustive (it does not include a line to install perl, for example), but they correspond to the parts of the installation that need more work than just running an install command. 
+
+## Ubuntu Versions
+There are R packages (for example, [multtest](https://www.bioconductor.org/packages/release/bioc/html/multtest.html)) that require R version 4.4.* which according to the [R website](https://cran.r-project.org/bin/linux/ubuntu/fullREADME.html) (as of August 2024) only supports the following Ubuntu versions:
+Noble Numbat (24.04, amd64 only)
+ - Jammy Jellyfish (22.04, amd64 only)
+ - Focal Fossa (20.04; LTS and amd64 only)
+ - Bionic Beaver (18.04; LTS)
+ - Xenial Xerus (16.04; LTS)
+     
+If the Linux version is not listed (e.g., 23.04), and installation of R 4.4.* is unattainable, you may need to upgrade or downgrade to one of the previously specified versions.
+
+## R and R Packages
+
+If the essential R packages are not available, PoolParty will try to install them automatically; however, some will fail if the R version is not 4.4.*. Below are the listed required high-level packages for each of the main poolparty scripts, and the bolded packages are the ones known to require R 4.4.*:
+* PPalign: 
+    1. matrixStats 
+    2. tidyr 
+    3. stringr 
+    4. data.table
+
+* PPstats: 
+    1. reshape 
+    2. fBasics 
+    3. ggplot2 
+    4. RColorBrewer
+
+* PPanalyze:
+    1. matrixStats 
+    2. plyr 
+    3. stringr 
+    4. data.table 
+    5. fBasics 
+    6. ape 
+    7. metap
+
+If R is already installed, you can check the version by running the following:
+> R --version
+
+# R 4.4.*
+If R is not installed or is not the correct version, first ensure that the Ubuntu version you are using is supported by running: 
+>lsb_release -a
+
+Which should generate the following output, identifying the version and codename:
+
+    No LSB modules are available.
+
+    Distributor ID:	Ubuntu
+
+    Description:	Ubuntu 22.04.4 LTS
+
+    Release:	22.04
+
+    Codename:	jammy
+
+Assuming it's a supported distribution and the codename you're using is "Jammy" as seen in the result of the preceding command, run the following to install the most recent version of R.
+> sudo wget -qO- https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | sudo gpg --dearmor -o /usr/share/keyrings/cran.gpg
+
+a. Necessary if the public key needed to verify the packages from the repository are missing.
+
+> sudo echo "deb [signed-by=/usr/share/keyrings/cran.gpg] https://cloud.r-project.org/bin/linux/ubuntu jammy-cran40/" | sudo tee /etc/apt/sources.list.d/cran.list
+
+> sudo apt-get update
+
+> sudo apt-get install r-base
+
+# R Packages
+Certain R packages require lower-level libraries that may not have previously been installed. To install them, use the following commands:
+
+> sudo apt-get update
+
+> sudo apt-get install build-essential libcurl4-gnutls-dev libxml2-dev libssl-dev libfftw3-dev
+
+To update all installed packages to their most recent versions, or rebuild them if you updated R, use the following command:
+
+> Rscript -e 'update.packages(ask = FALSE, checkBuilt = TRUE)'
 
 
 ## Prerequisites
