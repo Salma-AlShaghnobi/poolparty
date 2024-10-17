@@ -61,7 +61,7 @@ If the essential R packages are not available, PoolParty will try to install the
 If R is already installed, you can check the version by running the following:
 > R --version
 
-# R 4.4.*
+### R 4.4.*
 If R is not installed or is not the correct version, first ensure that the Ubuntu version you are using is supported by running: 
 >lsb_release -a
 
@@ -88,7 +88,7 @@ a. Necessary if the public key needed to verify the packages from the repository
 
 > sudo apt-get install r-base
 
-# R Packages
+### R Packages
 Certain R packages require lower-level libraries that may not have previously been installed. To install them, use the following commands:
 
 > sudo apt-get update
