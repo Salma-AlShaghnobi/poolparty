@@ -1,6 +1,6 @@
 # :fish: PoolParty (Updated) :umbrella:
 
-### A Pool-Seq Bioinformatic Pipeline (ver 0.8)
+### A Pool-Seq Bioinformatic Pipeline (ver 0.81)
 
 A BASH pipeline to align and analyze paired-end NGS data.  
 
