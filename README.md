@@ -1,4 +1,4 @@
-# :fish: PoolParty (Updated) :pool:
+# :fish: PoolParty (Updated)
 
 ### A Pool-Seq Bioinformatic Pipeline (ver 0.81)
 
