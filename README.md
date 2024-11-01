@@ -1,10 +1,10 @@
-# :fish: PoolParty (Updated)
+# 🐳 PoolParty (Updated) 🌊
 
-### A Pool-Seq Bioinformatic Pipeline (ver 0.81)
+A Pool-Seq Bioinformatic Pipeline using BASH and R to Align and Analyze Paired-End NGS Data. 
 
-A BASH pipeline to align and analyze paired-end NGS data.  
+Current citation: ["Micheletti SJ and SR Narum. 2018. Utility of pooled sequencing for association mapping in nonmodel organisms. Molecular Ecology Resources"](10.1111/1755-0998.12784)
 
-Current citation: "Micheletti SJ and SR Narum. 2018. Utility of pooled sequencing for association mapping in nonmodel organisms. Molecular Ecology Resources 10.1111/1755-0998.12784"
+This repository contains minor code modifications and revised comments that assist the user during the installation process. This version offers enhanced details regarding all facets of the pipeline. It also debugs errors encountered when attempting to execute the original work.
 
 # Getting Started
 
@@ -16,9 +16,6 @@ Ensure that proper permissions are set to execute each package in the pipeline .
 
  PP_example.pdf under 'examples' contains additional detailed information on the pipeline.  
 
-# Precursors
-
-This repository contains minor code modifications and revised comments that assist the user during the installation process. This version offers enhanced details regarding all facets of the pipeline. It also rectifies and debugs errors encountered when attempting to execute the original work. Note: this file only contains edits, as for the rest of the information, please refer back to the original README file  
 
 # Installation
 
@@ -37,68 +34,64 @@ If the Linux version is not listed (e.g., 23.04), and installation of R 4.4.* is
 ## R and R Packages
 
 If the essential R packages are not available, PoolParty will try to install them automatically; however, some will fail if the R version is not 4.4.*. Below are the listed required high-level packages for each of the main poolparty scripts, and the bolded packages are the ones known to require R 4.4.*:
-* PPalign: 
-    1. matrixStats 
-    2. tidyr 
-    3. stringr 
-    4. data.table
 
-* PPstats: 
-    1. reshape 
-    2. fBasics 
-    3. ggplot2 
-    4. RColorBrewer
+* PPalign: matrixStats, tidyr, stringr, data.table
 
-* PPanalyze:
-    1. matrixStats 
-    2. plyr 
-    3. stringr 
-    4. data.table 
-    5. fBasics 
-    6. ape 
-    7. metap
+* PPstats: reshape, fBasics, ggplot2, RColorBrewer
+
+* PPanalyze: matrixStats, plyr, stringr, data.table, fBasics, ape, metap
 
 If R is already installed, you can check the version by running the following:
-> R --version
+```
+R --version
+```
 
 ### R 4.4.*
 If R is not installed or is not the correct version, first ensure that the Ubuntu version you are using is supported by running: 
->lsb_release -a
-
+```
+lsb_release -a
+```
 Which should generate the following output, identifying the version and codename:
 
     No LSB modules are available.
-
     Distributor ID:	Ubuntu
-
     Description:	Ubuntu 22.04.4 LTS
-
     Release:	22.04
-
     Codename:	jammy
 
 Assuming it's a supported distribution and the codename you're using is "Jammy" as seen in the result of the preceding command, run the following to install the most recent version of R.
-> sudo wget -qO- https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | sudo gpg --dearmor -o /usr/share/keyrings/cran.gpg
-
+```	
+ sudo wget -qO- https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | sudo gpg --dearmor -o /usr/share/keyrings/cran.gpg
+```
 a. Necessary if the public key needed to verify the packages from the repository are missing.
+```
+sudo echo "deb [signed-by=/usr/share/keyrings/cran.gpg] https://cloud.r-project.org/bin/linux/ubuntu jammy-cran40/" | sudo tee /etc/apt/sources.list.d/cran.list
 
-> sudo echo "deb [signed-by=/usr/share/keyrings/cran.gpg] https://cloud.r-project.org/bin/linux/ubuntu jammy-cran40/" | sudo tee /etc/apt/sources.list.d/cran.list
+sudo apt-get update
 
-> sudo apt-get update
-
-> sudo apt-get install r-base
-
+sudo apt-get install r-base
+```
 ### R Packages
 Certain R packages require lower-level libraries that may not have previously been installed. To install them, use the following commands:
-
-> sudo apt-get update
-
-> sudo apt-get install build-essential libcurl4-gnutls-dev libxml2-dev libssl-dev libfftw3-dev
+```
+ sudo apt-get update
+ sudo apt-get install build-essential libcurl4-gnutls-dev libxml2-dev libssl-dev libfftw3-dev
+```
 
 To update all installed packages to their most recent versions, or rebuild them if you updated R, use the following command:
+```
+Rscript -e 'update.packages(ask = FALSE, checkBuilt = TRUE)'
+```
 
-> Rscript -e 'update.packages(ask = FALSE, checkBuilt = TRUE)'
+PPanalyze seems to require some additional packages:
+```
+Rscript -e 'if (!require("BiocManager", quietly = TRUE)) install.packages("BiocManager"); BiocManager::install("multtest")'
+```
 
+PPstats seems to require some additional packages:
+```
+Rscript -e 'install.packages("sparseMatrixStats", repos = "http://cran.us.r-project.org")'
+```
 ## Ubuntu Packages
 
 Below are the [packages required by poolparty](https://github.com/StevenMicheletti/poolparty/?tab=readme-ov-file#required-package-with-version-at-inception) , the versions, a link to the website, and a link to the downloaded version on Google Drive (if available):
@@ -120,216 +113,449 @@ In addition to these, these additional packages needed to be installed to instal
 
 ### Samtools (1.5)
 
-Download and extract the directory, then run the configure command to specify the installation path, and finally run make and make install. To eliminate ambiguity, add an extra soft link to /usr/bin. If you don't have sudo privileges, install locally and add the local binary to the path. 
+Download and extract the directory, then run the configure command to specify the installation path, and finally run make and make install. To eliminate ambiguity, add an extra soft link to ```/usr/bin```. If you don't have sudo privileges, install locally and add the local binary to the path. 
 Steps:
-> ./configure --prefix=/usr/local/
-> make
-> sudo make install
-> sudo ln -s /usr/local/bin/samtools /usr/bin/samtools
-
+```
+./configure --prefix=/usr/local/
+ make
+ sudo make install
+ sudo ln -s /usr/local/bin/samtools /usr/bin/samtools
+```
 Verify the version is correct by running: 
-> samtools
-
+```
+ samtools
+```
 ### Samblaster (0.1.24)
 Download and extract the directory, run make, and then create a soft link to the resulting binary
-> make
-> sudo ln -s ~/.local/packages/samblaster-v.0.1.24/samblaster /usr/bin/samblaster
-
+```
+ make
+ sudo ln -s ~/.local/packages/samblaster-v.0.1.24/samblaster /usr/bin/samblaster
+```
 Verify the version is correct by running: 
->samblaster
-
+```
+samblaster
+```
 ### Bcftools (1.5)
-Download and extract the directory, configure to set the installation path, and then run make and make install. To eliminate ambiguity, add an extra soft link to /usr/bin. If you don't have sudo rights, install locally and add the local binary to the path. 
-
-> ./configure --prefix=/usr/local/
-> make
-> sudo make install
-> sudo ln -s /usr/local/bin/bcftools /usr/bin/bcftools
-
-Verify the version is correct by running: 
-> `bcftools`
-
+Download and extract the directory, configure to set the installation path, and then run make and make install. To eliminate ambiguity, add an extra soft link to ```/usr/bin```. If you don't have sudo rights, install locally and add the local binary to the path. 
+```
+ ./configure --prefix=/usr/local/
+ make
+ sudo make install
+ sudo ln -s /usr/local/bin/bcftools /usr/bin/bcftools
+```
+Verify the version is correct by running:
+```
+ `bcftools`
+```
 ### Burrows-Wheeler Aligner (BWA; 07.12)
 
-BWA requires only that you run 'make' and make the resulting binary file available. The simplest way to accomplish this is to make a soft link to it in /usr/bin.
->make
->sudo ln -s ~/.local/packages/bwa-0.7.12/bwa /usr/bin/bwa
-
+BWA requires only that you run 'make' and make the resulting binary file available. The simplest way to accomplish this is to make a soft link to it in ```/usr/bin```.
+```
+make
+sudo ln -s ~/.local/packages/bwa-0.7.12/bwa /usr/bin/bwa
+```
 Verify the version is correct by running: 
-> `bwa`
+``` 
+`bwa`
+```
 
 ### Popoolation2 (1.201)
 
 Use svn to get the package and then move it to the desired directory. If it isn't already installed, you'll need to install it before running the commands below. 
-> svn checkout http://popoolation2.googlecode.com/svn/trunk/ popoolation2
-> sudo mv popoolation2 /usr/local/bin/popoolation2_1201
-
+```
+ svn checkout http://popoolation2.googlecode.com/svn/trunk/ popoolation2
+ sudo mv popoolation2 /usr/local/bin/popoolation2_1201
+```
 ### BBMap (37.93)
-Download the specific version then move it to the local/bin directory
-> sudo mv bbmap /usr/local/bin
-
+Download the specific version then move it to the ```local/bin``` directory
+```
+sudo mv bbmap /usr/local/bin
+```
 Verify the version is correct by checking the readme file in the bbmap directory
 
 ### Java 8u66
 Installing the correct version of Java was the most laborious part of the process. Download the specific version from the directory
-> sudo mkdir -p /usr/local/java
+```
+ sudo mkdir -p /usr/local/java
 
-> sudo mv jdk1.8.0_66 /usr/local/java/
+ sudo mv jdk1.8.0_66 /usr/local/java/
 
-> sudo update-alternatives --install /usr/bin/java java /usr/local/java/jdk1.8.0_66/bin/java 1
+ sudo update-alternatives --install /usr/bin/java java /usr/local/java/jdk1.8.0_66/bin/java 1
 
-> sudo update-alternatives --install /usr/bin/javac javac /usr/local/java/jdk1.8.0_66/bin/javac 1
+ sudo update-alternatives --install /usr/bin/javac javac /usr/local/java/jdk1.8.0_66/bin/javac 1
 
-> sudo update-alternatives --config java
-
+ sudo update-alternatives --config java
+```
 a. This command will list all installed versions of Java, select the one with the proper jdk (jdk1.8.0)
-> sudo update-alternatives --config javac
+```
+ sudo update-alternatives --config javac
+```
 a. Similar to above
 
 Verify the version is correct by running:
-> java -version
-> javac -version
-
+```
+ java -version
+ javac -version
+```
 ### Gradle
 
 Note: This requires a few things to be installed in addition to the correct Java version above including curl, sdk (or brew),
-> sudo apt install curl
-
-> curl -s "https://get.sdkman.io" | bash
-
-> sdk install gradle 8.9
-
+```
+ sudo apt install curl
+ curl -s "https://get.sdkman.io" | bash
+ sdk install gradle 8.9
+```
 ### Picard Tools (2.17.11)
 
 Very specific with what it needs to build properly:
 * Gradle requires the environment variable JAVA_HOME be set to the correct java version we installed earlier (add this to your .bashrc so it doesn’t have to be run again):
-  > export JAVA_HOME=/usr/local/java/jdk1.8.0_66/ 
-  > export PATH=$JAVA_HOME/bin:$PATH
-* The picard tools directory needs to have git initialized. This is not an issue if you used `git clone` to download the repo, however downloaded directly, the following command needs to be run:
-  > git init
+```
+  export JAVA_HOME=/usr/local/java/jdk1.8.0_66/ 
+  export PATH=$JAVA_HOME/bin:$PATH
+```
+* The picard tools directory needs to have git initialized. This is not an issue if you used ```git clone``` to download the repo, however downloaded directly, the following command needs to be run:
+  ```git init```
   
 In the directory where picard is installed, run the following commands to create the picard jar file:
-> ./gradlew shadowJar
-> java -jar build/libs/picard.jar
-
+```
+ ./gradlew shadowJar
+ java -jar build/libs/picard.jar
+```
 The jar file is what is used by poolparty, so you can either link to this file directly in your config, or create softlink to a common location and link there:
-> ln -s ~/.local/packages/picard-2.17.11/build/libs/picard.jar /usr/local/bin/picard.jar
-
+```
+ ln -s ~/.local/packages/picard-2.17.11/build/libs/picard.jar /usr/local/bin/picard.jar
+```
 ### Fastqc (0.11.7)
 
-One of the more straightforward packages. Download and move it somewhere permanent, then run the following commands from within it:
-> chmod +x ./fastqc
-> sudo ln -s ~/.local/packages/FastQC/fastqc /usr/bin/fastqc
-
+Download and move it somewhere permanent, then run the following commands from within it:
+```
+chmod +x ./fastqc
+sudo ln -s ~/.local/packages/FastQC/fastqc /usr/bin/fastqc
+```
 ## Poolparty Repository
 
-To properly install the repo, a few additional steps and adjustments to the [provided instructions](https://github.com/StevenMicheletti/poolparty/?tab=readme-ov-file#installing-and-running-the-pipeline) were required. For example, moving the repo to the /usr/local/bin directory may necessitate sudo rights in order to conduct any operations or changes to the repo's files. The procedures below move it to a local directory and use softlinks to replicate the same arrangement, but it may be relocated anywhere. 
-
-> git clone https://github.com/StevenMicheletti/poolparty/
-
-> mkdir ~/applications
-
-> mv poolparty ~/applications/poolparty
-
-The commands that will be run inside the poolparty repo will need to be made executable:
-> chmod +x ~/applications/poolparty/*.sh
+To properly install the repo, a few additional steps and adjustments to the [provided instructions](git@github.com:Salma-AlShaghnobi/poolparty.git) were required. For example, moving the repo to the ```/usr/local/bin``` directory may necessitate sudo rights in order to conduct any operations or changes to the repo's files. The procedures below move it to a local directory and use softlinks to replicate the same arrangement, but it may be relocated anywhere. 
+```
+git clone git@github.com:Salma-AlShaghnobi/poolparty.git
+mv poolparty /poolparty
+```
+The commands that will be run inside the poolparty repo will need to be made executable
 
 Softlinks should now be created to the repo and the three primary scripts that are used. The following commands utilize sudo, although you can omit it if permissions are not an issue. 
->sudo ln -s ~/applications/poolparty /usr/local/bin/poolparty
+```
+sudo ln -s poolparty /usr/local/bin/poolparty
 
-> sudo ln -s /usr/local/bin/poolparty/PPalign.sh /usr/local/bin/PPalign
+sudo ln -s poolparty/PPalign.sh /usr/local/bin/PPalign
 
-> sudo ln -s /usr/local/bin/poolparty/PPanalyze.sh /usr/local/bin/PPanalyze
+sudo ln -s /usr/local/bin/poolparty/PPanalyze.sh /usr/local/bin/PPanalyze
 
-> sudo ln -s /usr/local/bin/poolparty/PPstats.sh /usr/local/bin/PPstats
+sudo ln -s /usr/local/bin/poolparty/PPstats.sh /usr/local/bin/PPstats
+```
 
-# General Notes
 
-* The directories listed in the various config files are not set up to run immediately and will need to be changed to point to where the packages actually exist on the local machine.
-* Make sure that R and its packages are current by running the command below. Note: this might take some time to complete
-  > update.packages(ask = FALSE)
+## Running the Example 
 
-# Running the Example 
+Even if it doesn't work perfectly, reference the [examples PDF](https://github.com/StevenMicheletti/poolparty/blob/master/example/pool_party_example.pdf) when attempting to execute the instructions listed below. For example, the genome preparation code is slightly different, therefore it is recommended to execute these instead of the prep_genome.sh file. 
+```
+bwa index -a bwtsw PP_genome.fa
+samtools faidx PP_genome.fa
+java -jar /usr/local/bin/picard.jar CreateSequenceDictionary REFERENCE= PP_genome.fa OUTPUT= PP_genome.fa.dict
+```
 
-Even if it doesn't work perfectly, reference the [examples PDF](https://github.com/StevenMicheletti/poolparty/blob/master/example/pool_party_example.pdf) when attempting to execute the instructions listed below. For example, the genome preparation code is slightly different, therefore I would execute these instead of the prep_genome.sh file. 
-> bwa index -a bwtsw PP_genome.fa
+# PPAlign
+PPalign takes paired-end fastq files through the process of quality filtering and alignment to a reference genome.
+The specified populations are combined into a VCF file, a mpileup file, a sync file, and independent bam files. Additional reports are generated as well.
 
-> samtools faidx PP_genome.fa
+## What is the alignment phase doing to your fastqs? 
 
-> java -jar /usr/local/bin/picard.jar CreateSequenceDictionary REFERENCE= PP_genome.fa OUTPUT= PP_genome.fa.dict
+If pooled data do not have individual barcodes:
+- Quality trimming of fastq files and contaminant removal (BBduk from BBMap)  
+- Producing quality summaries of trimmed fastqs (fastqc)  
+- Aligning trimmed fastq files to genome assembly (bwa mem)  
+- Removing PCR duplicates and producing discordant and split-end bam files (samblaster)  
+- Filtering the aligned bam files and producing alignment stats (samtools)  
+- Sorting the bam files (Picard)  
+- Calling SNPs across all libraries (bcftools)
+- Identifying in/del regions  (Popoolation2)  
+- Creating sync file with in/del regions masked (Popoolation2)  
+- MAF filtering and potential paralog identification (r_frequency.R)
 
-Below is the status on the functionality of each script:
-  * PPAlign - Works on Ubuntu 23 - Desktop + virtual machine
-  * PPAnalyze - Works on virtual machine (maybe desktop)
-  * PPStats - Doesnt work anywhere
+If individual barcoded analyses the alignment phase also contains:
 
-## PPAlign
+- Individual contribution stats (r_ind_stats.R)
+- A standardized sync file that normalizes individuals' allelic contribution to each genomic position (r_standardize.R)
+
+## Input files
+In addition to fastq files, PPalign also requires an input file named 'samplelist.txt' which must be placed in the directory containing the fastqs. samplelist.txt is a list containing the file names (one per line) for all of the fastqs you want to include in the run. An example with 2 paired-end libraries:
+```
+Pool1_R1.fq.gz	1  
+Pool1_R2.fq.gz	1  
+Pool2_R1.fq.gz	2  
+Pool2_R2.fq.gz	2  
+```
+Note that the 'library' or 'population' number must be specified after each file. This number must be an integer from 1-N. See the example samplelist.txt for more information.
+
+The naming convention of the fastq files is essential. The unique ID identifying the library must occur before the first underscore and must match its paired-end mate. The number after the file designates the population or library that the file belongs to - this is particularly useful if individuals are barcoded or populations were sequenced on different lanes. 
+
+
+## Editing the .config file
+
+The configuration file contains working directory locations, run parameters and dependency locations. There are example config files provided. Create a new .config file for each run and place it in your working directory.
 
 The pp_align config file requires the output directory to already exist; otherwise, it fails. So, either create the directory first or set it to one that already exists.
-> mkdir ~/applications/poolparty/example/phenoAB_out
+``` mkdir ~/applications/poolparty/example/phenoAB_out ```
 
 And then set OUTDIR in pp_align.config as the following
-> OUTDIR=~/applications/poolparty/example/phenoAB_out/
+```OUTDIR=~/applications/poolparty/example/phenoAB_out/```
 
 The provided output directory must terminate with a slash; otherwise, the script will fail due to path-munging difficulties. Run it as follows:
-> PPalign pp_align.config
+``` PPalign pp_align.config```
 
-## PPAnalyze
+#### Directory and input explanation
 
-Requires specific R packages to be installed, so here is the combination of commands that got it to run.
+- INDIR = (dir; required) the input directory that contains unzipped fastq files. 'samplelist.txt' must also be here  
+- OUTDIR = (dir; required) the base directory where output files will be written to  
+- OUTPOP = (string; required) the unique prefix name for your population output files  
+- GENOME = (file; required) the location and name of the fasta genome file
+- SCAHEAD = (string; optional) the prefix that identifies unanchored scaffolds in the genome assembly  
 
-From within an R terminal:
-> update.packages(ask = FALSE)
+#### Run Parameters
 
-> sudo apt-get update
+- THREADZ=(integer; required) the number of threads to use when multi-threading and parallel processing is available  
+- BQUAL=(integer; required) minimum PHRED base quality for trimming raw reads 
+- MAPQ=(integer; required) minimum MAPQ score to retain an alignment 
+- SNPQ=(integer; required) minimum bcftools snp QUAL score to retain a SNP
+- MINLENGTH=(integer; required) minimum length a fastq read can be trimmed to before discarding
+- INWIN=(integer; required) the indel window size (bp) for masking SNPS around an indel 
+- MAF=(float; required) minimum global minor allele frequency to retain a SNP
+- KMEM=(string; required) maximum memory allocation for java packages. Value will vary based on system 
+- MINDP=(integer; required) minimum global coverage needed to retain a SNP
 
-> sudo apt-get install build-essential libcurl4-gnutls-dev libxml2-dev libssl-dev libfftw3-dev
+#### Run-types
+- SPLITDISC=(off/on; required) if on, produces split-end and discordant sam files. Not recommended unless the goal is to look at structural variants  
+- INDCONT=(off/on; required) if on, will analyze fastqs as if they are independent individuals. Individual stats and normalization. Note this a high memory process  
+- QUALREPORT=(off/on; required) if on, will produce quality reports from fastqc for each fastq file 
 
-Run with:
-> PPanalyze pp_analyze.config
+#### Dependency Locations
+Identify the location and names of the executables / scripts.  If you've made programs executable across from any directory you don't need to include the directory  
 
-### R Packages
+- BCFTOOLS (executable) = bcftools
+- FASTQC (executable) = fastqc
+- BWA (executable) = bwa
+- SAMBLASTER (executable) = samblaster
+- SAMTOOLS (executable) = samtools
+- PICARDTOOLS (file) = picard.jar
+- BBMAPDIR (directory) = location of the bbmap directory
+- POOL2 (directory) = location of the Popoolation2 directory
 
-Certain R packages require the installation of lower-level libraries, which may not already be installed. To install them, use the following commands:
-> sudo apt-get update
+## Output files and directories
+Many files will be produced during the alignment phase. Ensure you have enough storage before executing.
 
-> sudo apt-get install build-essential libcurl4-gnutls-dev libxml2-dev libssl-dev libfftw3-dev
+- ##### OUTDIR/OUTPOP_CHRbp.txt  
+  - Contains the end position and start position in basepairs for each  chromosome
+  
+- ##### OUTDIR/OUTPOP.mpileup  
+  - Combined filtered bam files, variants only. Order of columns is the same as in the order pools are listed in OUTDIR/_names.txt
+  
+- ##### OUTDIR/OUTPOP_stats.mpileup  
+  - Coverage for every combined library across all genomic positions of the ref assembly. Used to generate mapping stats
 
-Several packages are known to have troubles with installation.
-To update all installed packages to their most recent versions, or rebuild them if you updated R, use the following commands: 
-> sudo chmod -R +777 /usr/lib/R
+- ##### OUTDIR/OUTPOP.VCF 
+  - Filtered variant call format of all libraries consisting of variants only
 
-a. Not a command to run in the final version but this is what worked for now to get through permission issues in the directory preventing an update
+- ##### OUTDIR/OUTPOP_variants.txt  
+  - List of positions of variants from VCF file with QUAL and DP
+  
+- ##### OUTDIR/OUTPOP.sync  
+  - Sync format with indel regions masked. Used for downstream analyses  
+  
+- ##### OUTDIR/_.fz
+  - Allele frequency table of SNPs. Full is table with missing data, complete is table without missing data  
+  
+- ##### OUTDIR/trimmed/
+  - Quality trimmed fastq files written here with corresponding trim reports
 
-> Rscript -e 'update.packages(ask = FALSE, checkBuilt = TRUE)'
+- ##### OUTDIR/quality/  
+  - fastqc quality summaries for trimmed reads  
 
-> Rscript -e 'if (!require("BiocManager", quietly = TRUE)) install.packages("BiocManager"); BiocManager::install("multtest")'
+- ##### OUTDIR/BAM/.bam
+  - Aligned (bwa-mem, samblaster duplicate removal), coordinate-sorted (picard), and filtered (samtools unpaired read removal) bam  files for each library. Filtered bams are also combined by population/category assignment from the samplelist
 
-## PPStats
-PPstats seems to require some additional packages
-> Rscript -e 'install.packages("sparseMatrixStats", repos = "http://cran.us.r-project.org")'
+- ##### OUTDIR/BAM/split.sam  
+  - If specified, split-end alignments produced by samblaster. Required if running SV-analysis such as LUMPY
 
-PPstats runs several commands before failing at the final plotting script. After running it once, use the following command to just run the plotting script:
+- ##### OUTDIR/BAM/disc.sam  
+  - discordant alignments produced by samblaster. Required if running SV-analysis such as LUMPY  
 
-> Rscript ~/poolparty/rscripts/r_plotstats.R /usr/local/bin/poolparty/example/phenoAB_out/stats/PP_stats.txt /usr/local/bin/poolparty/example/phenoAB_out/stats
+- ##### OUTDIR/reports/
+  - Read alignment reports based on the alignment of trimmed reads for each aligned bam file
+  
+- ##### OUTDIR/pops/
+  - Files which specify which library belongs to which population. Also indicates the order of libraries in each population
 
-colMaxs does not appear to work in the way it was written. It can be resolved by turning all provided columns to matrices and running them. This was done manually for all calls to colMaxs, including the following example:
+- ##### OUTDIR/filters/
+  - Files that specify coverage for each library/population and SNP and INDEL genomic locations. Blacklisted MAF and > 2 allele SNPs will be produced here as well.
+  
+- ##### OUTDIR/inds/
+  - If individual analyses turned on, individual-based stats, sync files, and mpileup files will be produced here. Additionally, normalized files will appear in OUTDIR/
 
-    #Check if the variable is a vector and not a matrix
-    if (is.vector(tma$Mean_Coverage) && !is.matrix(tma$Mean_Coverage)) {
-    #Convert vector to a column matrix (n rows, 1 column)
-    tma_mean_coverage  <- matrix(tma$Mean_Coverage, ncol = 1)
-    tma_stdev <- matrix(tma$Stdev, ncol = 1)
-    } else {
-	     # Otherwise do nothing
-    tma_mean_coverage  <- tma$Mean_Coverage
-    tma_stdev <- tma$Stdev
-    }
 
-    #Pass the matrix into colMaxs and colMins
-    scalehigh <- colMaxs(tma_mean_coverage) + colMaxs(tma_stdev)
-    scalelow <- colMins(tma_mean_coverage) - colMaxs(tma_stdev)
 
-  Run with the following, and once complete, consult the PDF to see which files should have been outputted:
-  PPstats pp_stats.config
+# PPAnalyze
 
+## Input
+
+PPanalyze uses a freq and sync file generated by PPalign to perform basic comparative analyses.
+
+## How is PPanalyze analyzing you data? 
+
+- FST and/or sliding window FST (Popoolation2)  
+- Fisher's exact test for allele frequency differences (Popoolation2)
+- Neighbor-joining trees (r_structure.R, ape)
+- SNP density (r_structure.R)
+
+## Editing the .config file
+
+The configuration file contains working directory locations, run parameters and dependency locations. Create a new .config file for each run and place it in your working directory.
+
+#### Directory and input explanation
+- POPS=(alphanumeric string; required) - populations/libraries you wish to analyze/compare to one another. If more than two populations, comparative analyses (such as FST) will be averaged across all comparisons. In some cases, populations may share a same trait of interest and should not be averaged. A comma (,) between populations means compare those populations, a colon (:) means ignore that comparison.
+- PREFIX=(string; required) - unique prefix for output files
+- COVFILE=(file; required) - file produced by PPalign which contains depth of coverage information for all populations in the analysis
+- SYNC=(file; required) - sync file produced by PPalign
+- FZFILE=(file; required) - allele frequency file produced by PPalign
+- BLACKLIST=(file; optional) - optional list of loci to black list (CHR, POS). Usually this is an output file from PPalign
+- OUTDIR=(dir; required) - location to output files
+
+#### Types of analyses
+- FST=(on/off; required) - perform FST on each SNP
+- SLIDINGFST=(on/off; required) - perform sliding window FST on defined SNP window
+- FET=(on/off; required) - perform Fisher's exact test on each SNP
+- NJTREE=(on/off; required) - perform NJ-tree and SNP density either on windowed or single SNPs
+
+#### Parameters
+- MINCOV=(integer; required) - The minimum coverage at a SNP (across every population included in the analysis) for it to be retained for any analysis
+- MAXCOV=(integer; required) - The maximum coverage at a SNP (across every population included in the analysis) for it to be retained for any analysis
+- MAF=(float; required) - comparison-specific minimum minor allele frequency to retain SNPs based on
+- FSTTYPE=(traditional/karlsson; required IF FST=on) - Perform traditional FST analysis or Karlsson (et al. 2007) method (Uses allele depth) 
+- WINDOW=(integer; required IF SLIDINGFST=on OR NJTREE=on) - window size for windowed approaches such as FST and NJTREE. If set to 1, NJTREE will not perform windowed analyses.
+- STEP=(integer; required IF SLIDIGNFST=on) - step size for sliding window FST
+- NIND=(integer; required IF FST=on) - number of individuals in pool for FST correction
+- BSTRAP=(integer; required IF NJTREE=on) - number of bootstraps to perform on neighbor joining tree
+- AFILT=(float; required if NJTREE=on ) - crude filter to try to eliminate SNPs under selection. Filters out SNPs with allele frequencies greater than this value. If set to 1, will not perform allele frequency filtering.
+- METHOD=("mean","sdmax","sdmin","random","rangemax","rangemin","first"; required if NJTREE=on AND WINDOW >1) - Method to choose SNPs within a window for NJTREE analyses.
+
+#### Dependency location
+- POOL2 (directory) = location of the Popoolation2 directory
+Note that FET analyses required an additional perl module which can be installed with:
+
+``` $ cpan Text::NSP::Measures::2D::Fisher::twotailed ```
+
+
+## Output files 
+
+- ##### OUTDIR/PREFIX_raw*
+  - Popoolation2's raw output for the given analysis
+
+- ##### OUTDIR/PREFIX_analysis*.txt
+  - Reformatted output for the given analysis. CHR,POS, ID, and P/FST 
+  
+- ##### OUTDIR/PREFIX.sync
+  - Subset sync file for specified populations
+  
+- ##### OUTDIR/PREFIX.fz
+  - Subset frequency table for specified populations
+  
+- ##### OUTDIR/PREFIX_density.txt
+  - SNP density for specified window with median position in the window
+  
+- ##### OUTDIR/PREFIX_consensus/single.pdf
+  - If specified, NJ tree for a single tree and consensus tree using Nei's genetic distance and specified number of bootstraps
+  
+
+
+# PPStats
+PPstats uses a mpileup file to perform depth of coverage statistics. This is particularly useful to assess sequencing performance.
+
+## How does PPstats generate statistics?
+
+PPStats simply takes a mpileup with each population's depth of coverage for each genomic position and determines stats such as:  
+  -Mean depth of coverage for each population  
+  -Mean depth of coverage after minimum and maximum coverage filters are applied for each population  
+  -Proportion of the reference genome that each population covers with sufficient coverage  
+  -Proportion of each chromosome covered (checking for biased alignment)  
+
+## Editing the .config file
+
+- FAI==(file; required) - index file for the genome. Contains chromosome/scaffold lengths. Produced by samtools faidx
+- MPILEUP=(file; required) - stats mpileup generated by PPalign
+- OUTDIR=(dir; required) - output directory
+- OUTFILE=(string; required) - Prefix name of the stats output file (with no directory)
+- SCAFP=(string; required) - prefix name for scaffolds (will be indicated in .fai file). This is essential for plotting chromosome vs scaffold results. If no chromosomes are anchored, chromosomal analyses will be bypassed.
+- THREADZ=(integer; required) - number of threads to use. Memory usage is low for these analyses.
+- MINCOV=(integer; required) - minimum desired coverage to retain a genomic position
+- MAXCOV=(integer; required) - maximum desired coverage to retain a genomic position
+
+## Output files 
+
+- ##### OUTDIR/_summary.txt
+  - Ref assembly stats
+  
+- ##### OUTDIR/_prop_cov.pdf
+  - Proportion of genome covered after specified min and max depth of coverage
+  
+- ##### OUTDIR/_prop_at_covs.pdf
+  - Proportion of genome covered at minimum depth increments
+  
+- ##### OUTDIR/_mean_filt_cov.pdf
+  - Mean depth of coverage after filtering out reads by min and max depth of coverage
+  
+- ##### OUTDIR/_mean_coverage.pdf
+  - Mean depth of coverage of all mapped reads
+  
+- ##### OUTDIR/_chr_prop_mean.pdf
+  - Mean proportion of each chromosome covered by mapped reads after filtering out reads by min and max depth of coverage. Similar plots will produced for each library/population
+ 
+# Utility Scripts
+Multiple utility scripts come with PoolParty for plotting and additional analyses. Each of these can be run from the terminal without the need for a configuration file. Typing -h after calling the script will bring up help options for each.
+
+## PPmanhat
+ - Plots results such as FST, SFST, FET, density in a 4-column format (CHR,BP,SNPID,FST)
+## PPrunls
+ - Runs local score (Fariello et al. 2017) on p-values from SNPs
+## PPruncmh
+ - Runs a Cochran–Mantel–Haenszel (CMH) on .sync file
+## PPsubset
+ - Subsets FST,SFST, or FET file by specific libraries are additional coverage thresholds 
+## PPrunflk
+ - Runs FLK (Bonhomme et al. 2010) on .fz table 
+
+# Troubleshooting
+
+PoolParty is new so users may encounter bugs. However, there are common issues that can be avoided  :
+
+1) Permissions: Proper permissions are not only needed to run the PoolParty modules, but also all dependencies. Ensure that your user account has permissions to execute programs and write to the specified output directories.
+2) Memory: With increased data comes increased memory usage. If java programs encounter a memory error they will usually spit out an interpretable error. Tune the java memory parameter accordingly.
+3) Storage: Large temporary files can fill up smaller hard drives fast. Storage issues generally will have to be resolved with hardware. 
+4) Compatibility: PoolParty is POSIX compliant but incompatibilities with specific Linux distributions can still be encountered. Specific formatting of output drives can cause issues, especially if piping is not supported on these drives (mkfifo). Errors associating with drives may require reformatting or diverting output files to a different drive. 
+
+If an issue does not fall within this category, post the error message and explanation to the PoolParty GitHub page. Also, don't forget to check out the example file for more details. 
+
+## Stopping PoolParty
+
+Perhaps you included the wrong samples or need to add an additional information to a PoolParty run that is currently underway. Since many modules run background processes, you will have to kill the entire script in this fashion: 
+
+Enter the module that is running and determine processes it is associated with:  
+
+```
+$ ps -aux | grep PPalign 
+```
+
+Kill all script processes:  
+```
+ $ killall PPalign
+```
+You may need to kill any additional lingering processes
+```
+ $ kill PID
+```
