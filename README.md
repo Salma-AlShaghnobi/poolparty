@@ -23,7 +23,8 @@ Installing the [poolparty package](https://github.com/StevenMicheletti/poolparty
 
 ## Ubuntu Versions
 There are R packages (for example, [multtest](https://www.bioconductor.org/packages/release/bioc/html/multtest.html)) that require R version 4.4.* which according to the [R website](https://cran.r-project.org/bin/linux/ubuntu/fullREADME.html) (as of August 2024) only supports the following Ubuntu versions:
-Noble Numbat (24.04, amd64 only)
+
+ - Noble Numbat (24.04, amd64 only)
  - Jammy Jellyfish (22.04, amd64 only)
  - Focal Fossa (20.04; LTS and amd64 only)
  - Bionic Beaver (18.04; LTS)
@@ -66,9 +67,7 @@ Assuming it's a supported distribution and the codename you're using is "Jammy" 
 a. Necessary if the public key needed to verify the packages from the repository are missing.
 ```
 sudo echo "deb [signed-by=/usr/share/keyrings/cran.gpg] https://cloud.r-project.org/bin/linux/ubuntu jammy-cran40/" | sudo tee /etc/apt/sources.list.d/cran.list
-
 sudo apt-get update
-
 sudo apt-get install r-base
 ```
 ### R Packages
@@ -177,13 +176,9 @@ Verify the version is correct by checking the readme file in the bbmap directory
 Installing the correct version of Java was the most laborious part of the process. Download the specific version from the directory
 ```
  sudo mkdir -p /usr/local/java
-
  sudo mv jdk1.8.0_66 /usr/local/java/
-
  sudo update-alternatives --install /usr/bin/java java /usr/local/java/jdk1.8.0_66/bin/java 1
-
  sudo update-alternatives --install /usr/bin/javac javac /usr/local/java/jdk1.8.0_66/bin/javac 1
-
  sudo update-alternatives --config java
 ```
 a. This command will list all installed versions of Java, select the one with the proper jdk (jdk1.8.0)
@@ -244,11 +239,8 @@ The commands that will be run inside the poolparty repo will need to be made exe
 Softlinks should now be created to the repo and the three primary scripts that are used. The following commands utilize sudo, although you can omit it if permissions are not an issue. 
 ```
 sudo ln -s poolparty /usr/local/bin/poolparty
-
 sudo ln -s poolparty/PPalign.sh /usr/local/bin/PPalign
-
 sudo ln -s /usr/local/bin/poolparty/PPanalyze.sh /usr/local/bin/PPanalyze
-
 sudo ln -s /usr/local/bin/poolparty/PPstats.sh /usr/local/bin/PPstats
 ```
 
