@@ -3,17 +3,21 @@
  suppressMessages(require(fBasics))
  suppressMessages(require(ggplot2))
  suppressMessages(require(RColorBrewer))
+ suppressMessages(require(sparseMatrixStats))
 
 #Get info for bash script
 args <- commandArgs()
 name <- args[6]
 outdir <- args[7]
 
+print(str(outdir))
+print(str(name))
+
 outname <- sub('\\..*', '', name)
 
 infile <- read.delim(name , header= F, sep = " ")
 infile <- infile[,colSums(is.na(infile))<nrow(infile)]
-
+print(str(infile))
   #Get summary information
   	 summary <- infile[ which(infile$V1=='SUMMARY' | infile$V1=='COMB_TOT_BP' | infile$V1=='COMB_TOT_PROP'), ]
  	 	if (nrow(summary) < 2) stop ("SUMMARY information not present, there is something wrong with the input file")
@@ -22,12 +26,13 @@ infile <- infile[,colSums(is.na(infile))<nrow(infile)]
   	 write.table(summary, namez , sep = " ", col.names = F, row.names = F, quote =F)
   	 summary <- as.data.frame(summary)
   	 print("R ALERT: Summary Written")
-
+print(str(summary))
   #Get genome sizes in basepairs - may get NAs, don't worry
   gsize = as.numeric(as.character(summary[1:2,5]))
   asize =gsize[2]
   gsize = gsize[1]
   
+  print(str(gsize),str(asize))
   #make rounding function
   mround <- function(x,base){ 
     base*round(x/base) 
@@ -48,15 +53,23 @@ infile <- infile[,colSums(is.na(infile))<nrow(infile)]
   
   #Total mean coverage for populations 
   	tma <-   infile[ which(infile$V1=='TMA'), ]
+  	print(str(tma))
   		tma<- tma[1:3]
+  		  	print(str(tma))
  	tms <-  infile[ which(infile$V1=='TMS'), ]
   	tma$V4 <- tms$V3
+  	  	print(str(tma))
   	tma <- tma[,-1]
+  	  	print(str(tma))
   	colnames(tma) <- c("Population", "Mean_Coverage", "Stdev")
+  	  	print(str(tma))
   	tma$Mean_Coverage <- as.numeric(as.character(tma$Mean_Coverage))
+  	  	print(str(tma))
  	tma$Stdev <- as.numeric(as.character(tma$Stdev))
+ 	  	print(str(tma))	
   	tma$Population <- as.numeric(as.character(tma$Population))
   	tma <- tma[order(tma$Population),]
+  	print(str(tma))
 
   	if (nrow(tma) < 1) stop ("Mean coverage information not present; something is wrong with input file")
 
@@ -68,15 +81,25 @@ infile <- infile[,colSums(is.na(infile))<nrow(infile)]
     		colnames(sumr) <- c("Population", "Mean_Coverage", "Stdev")
    		tma <- rbind(tma,sumr)
  	 }
-
+  	print(str(sumr))
+  	  	print(str(tma))
 	  pnumz <- as.numeric(nrow(tms))
  	  tma$Population <- factor(tma$Population, levels = unique(tma$Population))
+  		# Check if it's a vector and not a matrix 
+if (is.vector(tma$Mean_Coverage) && !is.matrix(tma$Mean_Coverage)) { 
+# Convert vector to a column matrix (n rows, 1 column) 
+tma_mean_coverage  <- matrix(tma$Mean_Coverage, ncol = 1) 
+tma_stdev <- matrix(tma$Stdev, ncol = 1) 
+} else { 
+tma_mean_coverage  <- tma$Mean_Coverage
+tma_stdev <- tma$Stdev
+}
 
 		#Custom ticking - get ticks based on scale 
-  			scalehigh <- colMaxs(tma$Mean_Coverage)+colMaxs(tma$Stdev) 
- 			scalelow <- colMins(tma$Mean_Coverage)-colMaxs(tma$Stdev)
+  			scalehigh <- colMaxs(tma_mean_coverage)+colMaxs(tma_stdev)
+ 			scalelow <- colMins(tma_mean_coverage)-colMaxs(tma_stdev)
   			diff <- scalehigh - scalelow
-  
+
   		##TICK ADJUST##
  			 if (diff > 0 && diff < .05) {
    				 bey =.0001
@@ -162,14 +185,14 @@ infile <- infile[,colSums(is.na(infile))<nrow(infile)]
 
 	#plot
   	q <- ggplot(tma, aes(x = Population, y = Mean_Coverage, fill = Population)) + 
-   	 geom_bar(stat = "identity", width =.9, colour ="black", size =.25)  +
-    	geom_errorbar(aes(ymin=Mean_Coverage-Stdev,ymax=Mean_Coverage+Stdev), width=.2, size = .25, position=position_dodge(.9))
+   	 geom_bar(stat = "identity", width =.9, colour ="black", linewidth =.25)  +
+    	geom_errorbar(aes(ymin=Mean_Coverage-Stdev,ymax=Mean_Coverage+Stdev), width=.2, linewidth = .25, position=position_dodge(.9))
   
   	p <- q + labs(title= "Mean Depth of Coverage", x= "Library", y = "Mean Depth of Coverage (X)") + 
    	 theme(
      	 legend.position="none",
       	axis.ticks.x=element_blank(),  panel.grid.major = element_blank(), panel.grid.minor = element_blank(),  panel.background = element_blank(),
-      	panel.border = element_rect(colour = "black", fill=NA, size=.25)) +
+      	panel.border = element_rect(colour = "black", fill=NA, linewidth=.25)) +
     
     	scale_fill_manual(values= c(rep("darkblue",pnumz), "darkgreen")) +
     	# scale_fill_manual( values= colfunc1(nrow(tma))) +
@@ -215,10 +238,19 @@ infile <- infile[,colSums(is.na(infile))<nrow(infile)]
   		} 
   
  	 fma$Population <- factor(fma$Population, levels = unique(fma$Population))
+ 	 
+if (is.vector(fma$Mean_Coverage) && !is.matrix(fma$Mean_Coverage)) { 
+# Convert vector to a column matrix (n rows, 1 column) 
+fma_mean_coverage  <- matrix(fma$Mean_Coverage, ncol = 1) 
+fam_stdev <- matrix(fma$Stdev, ncol = 1) 
+} else { 
+fma_mean_coverage  <- fma$Mean_Coverage
+fam_stdev <- fma$Stdev
+}
   
   		#plot
-  		scalehigh <- colMaxs(fma$Mean_Coverage)+colMaxs(fma$Stdev)
-  		scalelow <- colMins(fma$Mean_Coverage)-colMaxs(fma$Stdev)
+  		scalehigh <- colMaxs(fma_mean_coverage)+colMaxs(fam_stdev)
+  		scalelow <- colMins(fma_mean_coverage)-colMaxs(fam_stdev)
   		diff <- scalehigh - scalelow
 
   		##TICK ADJUST##
@@ -305,14 +337,14 @@ infile <- infile[,colSums(is.na(infile))<nrow(infile)]
   		##TICK ADJUST DONE##
 
  q <- ggplot(fma, aes(x = Population, y = Mean_Coverage, fill = Population)) + 
-    geom_bar(stat = "identity", width =.9, colour ="black", size =.25) +  
-    geom_errorbar(aes(ymin=Mean_Coverage-Stdev,ymax=Mean_Coverage+Stdev), width=.2, size =.25, position=position_dodge(.9))
+    geom_bar(stat = "identity", width =.9, colour ="black", linewidth =.25) +  
+    geom_errorbar(aes(ymin=Mean_Coverage-Stdev,ymax=Mean_Coverage+Stdev), width=.2, linewidth =.25, position=position_dodge(.9))
   
   p <- q + labs(title= "Mean Depth of Coverage After Filters", x= "Population", y = "Mean Depth of Coverage (X)") + 
     theme(
       legend.position="none",
       axis.ticks.x=element_blank(),  panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank(),
-      panel.border = element_rect(colour = "black", fill=NA, size=.25)) +
+      panel.border = element_rect(colour = "black", fill=NA, linewidth=.25)) +
     scale_fill_manual(values= c(rep("orange",pnumz), "darkgreen")) + 
     #scale_fill_manual( values= colfunc2(nrow(fma))) +
     geom_hline(yintercept=0)
@@ -364,8 +396,15 @@ infile <- infile[,colSums(is.na(infile))<nrow(infile)]
   
   fpc$Population <- factor(fpc$Population, levels = unique(fpc$Population))
   
+if (is.vector(fpc$Proportion_Covered) && !is.matrix(fpc$Proportion_Covered)) { 
+# Convert vector to a column matrix (n rows, 1 column) 
+fpc_Proportion_Covered  <- matrix(fpc$Proportion_Covered, ncol = 1) 
+} else { 
+fpc_Proportion_Covered  <- fpc$Proportion_Covered
+}
+  
  		 #plot
-  		scalehigh <- colMaxs(fpc$Proportion_Covered) +  colMaxs(fpc$Proportion_Covered* .05) 
+  		scalehigh <- colMaxs(fpc_Proportion_Covered) +  colMaxs(fpc_Proportion_Covered * .05) 
   		scalelow <- 0
   		diff <- scalehigh - scalelow
 
@@ -452,14 +491,14 @@ infile <- infile[,colSums(is.na(infile))<nrow(infile)]
   		##TICK ADJUST DONE##
 
 	q <- ggplot(fpc, aes(x = Population, y = Proportion_Covered, fill = Population)) + 
-    	geom_bar(stat = "identity", width =.9, colour ="black", size =.25) +
-    	geom_errorbar(aes(ymin=Proportion_Covered-Total_BP,ymax=Proportion_Covered+Total_BP), size = .25, width=.2, position=position_dodge(.9))
+    	geom_bar(stat = "identity", width =.9, colour ="black", linewidth =.25) +
+    	geom_errorbar(aes(ymin=Proportion_Covered-Total_BP,ymax=Proportion_Covered+Total_BP), linewidth = .25, width=.2, position=position_dodge(.9))
   
  	 p <- q + labs(title= "Proportion of Genome Covered After Coverage Filters", x= "Library", y = "Proportion of Genome") + 
    	 theme(
       		legend.position="none",
      	 axis.ticks.x=element_blank(),  panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank(),
-      	panel.border = element_rect(colour = "black", fill=NA, size=.25)) +
+      	panel.border = element_rect(colour = "black", fill=NA, linewidth=.25)) +
    		 # scale_fill_manual( values= colfunc3(nrow(fpc))) +
     	scale_fill_manual(values= c(rep("goldenrod3",pnumz), "gray")) + 
     	geom_hline(yintercept=0) 
@@ -564,9 +603,16 @@ infile <- infile[,colSums(is.na(infile))<nrow(infile)]
   	}
   
   	SCANC$Population <- factor(SCANC$Population, levels = unique(SCANC$Population))
+  	
+ if (is.vector(SCANC$Proportion_Covered) && !is.matrix(SCANC$Proportion_Covered)) { 
+# Convert vector to a column matrix (n rows, 1 column) 
+SCANC_Proportion_Covered  <- matrix(SCANC$Proportion_Covered, ncol = 1) 
+} else { 
+SCANC_Proportion_Covered  <- SCANC$Proportion_Covered
+}
   
   	#plot
-  	scalehigh <- colMaxs(SCANC$Proportion_Covered) +  colMaxs(SCANC$Proportion_Covered* .05) 
+  	scalehigh <- colMaxs(SCANC_Proportion_Covered) +  colMaxs(SCANC_Proportion_Covered * .05) 
   	scalelow <- 0
   	diff <- scalehigh - scalelow
  			 if (diff > 0 && diff < .05) {
@@ -652,14 +698,14 @@ infile <- infile[,colSums(is.na(infile))<nrow(infile)]
   		##TICK ADJUST DONE##
 
  	q <- ggplot(SCANC, aes(Population,Proportion_Covered, fill = Population)) + 
-  		  geom_bar(aes(fill = Region), position = "dodge", stat = "identity", width =.9, colour ="black", size =.5) +
+  		  geom_bar(aes(fill = Region), position = "dodge", stat = "identity", width =.9, colour ="black", linewidth =.5) +
     		  scale_fill_manual(values = c("darkslateblue","aquamarine3")) 
   
  	 p <- q + labs(title= "Proportion of Genome Covered After Coverage Filters: Anchored Vs. Unanchored Alignment", x= "Library", y = "Proportion of Genome", fill = "Assembly Type") + 
     		theme(
       			#legend.position="none",
       		axis.ticks.x=element_blank(),  panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank(),
-      		panel.border = element_rect(colour = "black", fill=NA, size=.1)) +
+      		panel.border = element_rect(colour = "black", fill=NA, linewidth=.1)) +
     		geom_hline(yintercept=0) 
     		#geom_hline(yintercept=0.5, linetype = 2) #if cut off line desired
   
@@ -798,7 +844,7 @@ infile <- infile[,colSums(is.na(infile))<nrow(infile)]
 
  		p <- ggplot(df.melted, aes(x = Coverage, y = value, colour = Library)) +  
     			labs(title= "Proportion of Genome Covered at Different Depths") +
-    			geom_line(size=.25, linetype =1) + 
+    			geom_line(linewidth=.25, linetype =1) + 
     			ylab(label="Proportion of genome covered") + 
     			xlab("Coverage (X)") + 
     			scale_colour_manual(values= c(colfunc4(nrow(tma)-1), "black")) +
@@ -814,7 +860,7 @@ infile <- infile[,colSums(is.na(infile))<nrow(infile)]
  		 f <- f + theme(
     			axis.text.x  = element_text(angle=90, vjust=0.5),
     			panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank(),
-    			panel.border = element_rect(colour = "black", fill=NA, size=.25)) +
+    			panel.border = element_rect(colour = "black", fill=NA, linewidth=.25)) +
     			scale_fill_manual( values= colfunc3(nrow(fpc)))
   
   			#xaxis ticks
@@ -921,8 +967,14 @@ infile <- infile[,colSums(is.na(infile))<nrow(infile)]
  		mean.mchr$wm2 <- mean.mchr$w - mean.mchr$prop
   		mean.mchr$wt <- with(mean.mchr, wm + (w - wm)/2)
   
+if (is.vector(mean.mchr$mean) && !is.matrix(mean.mchr$mean)) { 
+# Convert vector to a column matrix (n rows, 1 column) 
+mean_mchr_mean  <- matrix(mean.mchr$mean, ncol = 1) 
+} else { 
+mean_mchr_mean  <- mean.mchr$mean
+}
 		#Plot
-  		scalehigh <- colMaxs(mean.mchr$mean)+ colMaxs(mean.mchr$mean* .5) 
+  		scalehigh <- colMaxs(mean_mchr_mean)+ colMaxs(mean_mchr_mean * .5) 
   		scalelow <- 0
   		diff <- scalehigh - scalelow
 
@@ -1013,9 +1065,9 @@ infile <- infile[,colSums(is.na(infile))<nrow(infile)]
   		p1 <- q  +  scale_fill_manual(values= c(rep("grey",(nrow(mean.mchr)))))
   		p2 <- p1 + geom_text(aes(x = wt, y = mean *  0.5, label = chr, angle = 90, hjust = 0.5, size=.75)) 
  		p3 <- p2 + theme_bw() + theme(legend.position = "none",  axis.text.x=element_blank(),  axis.ticks.x=element_blank(),
-                               panel.border = element_rect(colour = "black", fill=NA, size=.25)) +
+                               panel.border = element_rect(colour = "black", fill=NA, linewidth=.25)) +
     			labs(title = "Proportion of each chromosome covered at across all libraries", y= "Mean Coverage", x="Assembly Chromosome" ) +
-    			geom_hline(yintercept= mean(mean.mchr$mean), size=1, linetype ="dashed", color ="darkred" ) +  geom_hline(yintercept= 0 ) 
+    			geom_hline(yintercept= mean(mean.mchr$mean), linewidth=1, linetype ="dashed", color ="darkred" ) +  geom_hline(yintercept= 0 ) 
   
   		if (i >1 ) {
     			f <-p3 + geom_errorbar(data =mean.mchr, aes(ymin = mean -stdev, ymax = mean + stdev, x = wt, width= min(w*.10)),
@@ -1064,8 +1116,14 @@ infile <- infile[,colSums(is.na(infile))<nrow(infile)]
       				colorz <- colfunc4(length(popz))
       				c1 <- (colorz[pI])
       				colorz2 <- replicate(nrow(subz), c1)   
-      
-      				scalehigh <- colMaxs(subz$Proportion)+ colMaxs(subz$Proportion) *.95 
+if (is.vector(subz$Proportion) && !is.matrix(subz$Proportion)) { 
+# Convert vector to a column matrix (n rows, 1 column) 
+subz_Proportion  <- matrix(subz$Proportion, ncol = 1) 
+} else { 
+subz_Proportion  <- subz$Proportion
+}
+	
+      				scalehigh <- colMaxs(subz_Proportion)+ colMaxs(subz_Proportion) *.95 
       				scalelow <- 0
       				diff <- scalehigh - scalelow
 			#TICK ADJUST#
@@ -1156,7 +1214,7 @@ infile <- infile[,colSums(is.na(infile))<nrow(infile)]
            			p1 <- q  +  scale_fill_manual(values= colorz2)
        				p2 <- p1 + geom_text(aes(x = wt, y = Proportion *  0.5, label = Chromosome, angle = 90, hjust = 0.5, size=1)) 
       				p3 <- p2 + theme_bw() + theme(legend.position = "none",  axis.text.x=element_blank(),  axis.ticks.x=element_blank(),
-                                    	panel.border = element_rect(colour = "black", fill=NA, size=.75)) +
+                                    	panel.border = element_rect(colour = "black", fill=NA, linewidth=.75)) +
         					labs(title = Title, y= "Proportion Covered", x="Assembly Chromosome" ) + geom_hline(yintercept= 0) 
       
       				f <- p3  
