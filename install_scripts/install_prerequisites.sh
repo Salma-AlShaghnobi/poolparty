@@ -8,6 +8,7 @@ sudo apt install -y build-essential \
 	libncursesw5-dev \
 	zlib1g-dev \
 	libbz2-dev \
-	libssl-dev 
-
-
+	libssl-dev  \
+	liblzma-dev \
+	liblzma5 \
+	pkg-config
