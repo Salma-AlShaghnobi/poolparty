@@ -11,4 +11,6 @@ sudo apt install -y build-essential \
 	libssl-dev  \
 	liblzma-dev \
 	liblzma5 \
+	curl \
+	subversion \
 	pkg-config
