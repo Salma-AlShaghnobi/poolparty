@@ -12,5 +12,9 @@ sudo apt install -y build-essential \
 	liblzma-dev \
 	liblzma5 \
 	curl \
+	build-essential \
+	gettext \
+	libhts-dev \
+	zlib1g-dev \
 	subversion \
 	pkg-config
