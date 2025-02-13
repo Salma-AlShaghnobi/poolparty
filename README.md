@@ -144,7 +144,7 @@ Download and extract the directory, configure to set the installation path, and 
 ```
 Verify the version is correct by running:
 ```
- `bcftools`
+ bcftools
 ```
 ### Burrows-Wheeler Aligner (BWA; 07.12)
 
@@ -155,7 +155,7 @@ sudo ln -s ~/.local/packages/bwa-0.7.12/bwa /usr/bin/bwa
 ```
 Verify the version is correct by running: 
 ``` 
-`bwa`
+bwa
 ```
 
 ### Popoolation2 (1.201)
