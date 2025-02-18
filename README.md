@@ -23,7 +23,7 @@ Installing the [poolparty package](https://github.com/StevenMicheletti/poolparty
 ``` 
 ./install
  ```
-If you face any errors, please return to the README_INSTALLSCRIPTS file.
+If you face any errors, please return to the README file in the install_scripts folder.
 
 ## Ubuntu Versions
 There are R packages (for example, [multtest](https://www.bioconductor.org/packages/release/bioc/html/multtest.html)) that require R version 4.4.* which according to the [R website](https://cran.r-project.org/bin/linux/ubuntu/fullREADME.html) (as of August 2024) only supports the following Ubuntu versions:
