@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# Set the script directory to the directory of the current script
+poolparty_dir=$(dirname "$(realpath "$0")")
+
+# Set the packages directory to the relative path from the script
+packages_dir=$poolparty_dir/packages
+
+scripts=(
+    "packages.sh"
+    "$packages_dir/install_prerequisites.sh"
+    "$packages_dir/r.sh"
+    "$packages_dir/install_samtools.sh"
+    "$packages_dir/install_samblaster.sh"
+    "$packages_dir/install_bcftools.sh"
+    "$packages_dir/install_bwa.sh"
+    "$packages_dir/install_popoolation2.sh"
+    "$packages_dir/install_BBmap.sh"
+    "$packages_dir/install_java.sh"
+    "$packages_dir/install_picardtools.sh"
+    "$packages_dir/install_fastqc.sh"
+)
+
+sudo ln -sf $poolparty_dir /usr/local/bin/poolparty
+sudo ln -sf $poolparty_dir/PP*.sh /usr/local/bin/
+
+
+for script in "${scripts[@]}"; do
+./"$script" || { echo "Error in $script, exiting."; exit 1; }
+done
