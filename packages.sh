@@ -48,10 +48,3 @@ else
 	echo "Extraction failed."
 	exit 1
 fi
-
-scripts_dir="$download_dir/install_scripts"
-
-# End of script
-
-
-

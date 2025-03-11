@@ -2,7 +2,6 @@
 
 sudo apt update
 
-
 sudo apt install -y build-essential \
 	libncurses5-dev \
 	libncursesw5-dev \
@@ -12,7 +11,8 @@ sudo apt install -y build-essential \
 	liblzma-dev \
 	liblzma5 \
 	curl \
-	build-essential \
+	devscripts \
+	gawk \
 	gettext \
 	libhts-dev \
 	zlib1g-dev \

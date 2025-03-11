@@ -1,4 +1,8 @@
 packages/*
 !*README.md 
 packages.rar
+data/*
+example/phenoAB_out
+example/PP_genome.fa.dict
+!*.gitkeep
 

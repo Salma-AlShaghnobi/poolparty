@@ -16,15 +16,6 @@ Ensure that proper permissions are set to execute each package in the pipeline .
 
  PP_example.pdf under 'examples' contains additional detailed information on the pipeline.  
 
-
-# Installation
-
-Installing the [poolparty package](https://github.com/StevenMicheletti/poolparty/) to run PPAlign and PPanalyze on the example it provides requires installing certain versions of Ubuntu, R, and libraries. To intsall the correct version of R and the libraries run the install file in the poolparty terminal. 
-``` 
-./install
- ```
-If you face any errors, please return to the README file in the install_scripts folder.
-
 ## Ubuntu Versions
 There are R packages (for example, [multtest](https://www.bioconductor.org/packages/release/bioc/html/multtest.html)) that require R version 4.4.* which according to the [R website](https://cran.r-project.org/bin/linux/ubuntu/fullREADME.html) (as of August 2024) only supports the following Ubuntu versions:
 
@@ -36,23 +27,14 @@ There are R packages (for example, [multtest](https://www.bioconductor.org/packa
      
 If the Linux version is not listed (e.g., 23.04), and installation of R 4.4.* is unattainable, you may need to upgrade or downgrade to one of the previously specified versions.
 
-## Poolparty Repository
+## Installation
 
-To properly install the repo, a few additional steps and adjustments to the [provided instructions](git@github.com:Salma-AlShaghnobi/poolparty.git) were required. For example, moving the repo to the ```/usr/local/bin``` directory may necessitate sudo rights in order to conduct any operations or changes to the repo's files. The procedures below move it to a local directory and use softlinks to replicate the same arrangement, but it may be relocated anywhere. 
-```
-git clone git@github.com:Salma-AlShaghnobi/poolparty.git
-mv poolparty /poolparty
-```
-The commands that will be run inside the poolparty repo will need to be made executable
-
-Softlinks should now be created to the repo and the three primary scripts that are used. The following commands utilize sudo, although you can omit it if permissions are not an issue. 
-```
-sudo ln -s poolparty /usr/local/bin/poolparty
-sudo ln -s poolparty/PPalign.sh /usr/local/bin/PPalign
-sudo ln -s /usr/local/bin/poolparty/PPanalyze.sh /usr/local/bin/PPanalyze
-sudo ln -s /usr/local/bin/poolparty/PPstats.sh /usr/local/bin/PPstats
-```
-
+Installing the [poolparty package](https://github.com/StevenMicheletti/poolparty/) to run PPAlign and PPanalyze on the example it provides requires installing certain versions of Ubuntu, R, and libraries. To intsall the correct version of R and the libraries run the packages and install files in the poolparty terminal. 
+``` 
+./packages.sh
+./install
+ ```
+If you face any errors, please return to the README file in the install_scripts folder.
 
 ## Running the Example 
 
